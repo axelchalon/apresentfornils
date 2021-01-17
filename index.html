@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>The Magical Box</title>
+  <link rel="stylesheet" href="restest.css">
+  <link rel="stylesheet" href="heart.css">
+  <link rel="icon" href="favicon192.png">
+  <script src="jqq.css"></script>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300&display=swap" rel="stylesheet">
+  <style>
+
+    body { -webkit-touch-callout: none !important;
+     -moz-touch-callout: none !important;
+      -ms-touch-callout: none !important;
+      font-family: 'IBM Plex Serif', serif;
+    }
+    a { -webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;}
+
+    body {
+      text-align: center;
+      background: #f2f2f2;
+      line-height: 1.25;
+    }
+
+    h1, h2, h3 {
+      margin: 50px;
+    }
+
+    h1 {
+      font-size: 3rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1.5rem
+    }
+
+    .button {
+      position: absolute;
+      /* top: 30%; /* Use flex instead */
+      width: 30vw;
+      height: 30vw;
+
+      background: red;
+      border-radius: 50%;
+    }
+    .button:active {
+
+    }
+
+    .button-p1 {
+      left: 10vw;
+    }
+
+    .button-p2 {
+      right: 10vw;
+    }
+
+
+    .white-overlay.active {
+      transition: opacity 1.5s ease-in;
+      opacity: 1;
+    }
+    .white-overlay {
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: white;
+      transition: opacity 2s ease-out;
+    }
+
+    #newgame {
+      font-size: 1rem;
+      color: #4c4cf7;
+      margin-top: 5rem;
+      margin-bottom: 5rem;
+    }
+    #newgame a {
+      text-decoration: none;
+    }
+  </style>
+
+  <style>
+    .screen-home { padding-bottom: 20vh; }
+    body.round .screen-home { display: none; }
+    body:not(.round) .screen-round { display: none; }
+  </style>
+
+  <style>
+    .bg_heartf {
+        position: fixed;
+        top: 0;
+        left: -10%;
+        right: 0;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .heartf {
+        position: absolute;
+        top: -50%;
+        -webkit-transform: rotate(-45deg);
+        -moz-transform: rotate(-45deg);
+        -m-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        background: red !important;
+    }
+
+    .heartf:before {
+        position: absolute;
+        top: -50%;
+        left: 0;
+        display: block;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: 100%;
+    }
+
+    .heartf:after {
+        position: absolute;
+        top: 0;
+        right: -50%;
+        display: block;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: 100%;
+    }
+
+    @-webkit-keyframes love {
+      0%{top:110%}
+    }
+    @-moz-keyframes love {
+      0%{top:110%}
+    }
+    @-ms-keyframes love {
+      0%{top:110%}
+    }
+    @keyframes love {
+      0%{top:110%}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="screen-home">
+  <h1>Welcome to the Magical Box</h1>
+  <h2>Do you consent to entering the magical box of connection games?</h2>
+  <h3>Press and hold down the heart on your side of the screen to assent</h3>
+
+  <!-- <a href="#" class="button button-p1">
+  </a>
+  <a href="#" class="button button-p2">
+  </a> -->
+
+  <div class="parent">
+    <a class="heart">
+      <span>&hearts;</span>
+    </a>
+    <a class="heart">
+      <span>&hearts;</span>
+    </a>
+  </div>
+  </div>
+
+  <div class="screen-round">
+    <h1></h1>
+    <h3 style="white-space:pre-wrap;">
+
+    </h3>
+    <p id="newgame">
+      <a href="#">↻</a>
+    </p>
+  </div>
+
+<div class="white-overlay">
+</div>
+
+<div class="bg_heartf"></div>
+<script>
+
+  /* This JavaScript script brought to you by Nicolas Cage */
+
+  const GAMES=[
+    ['Question Game',
+    `It’s simple - just take turns asking the other person a question about themselves.
+
+Suggested play time: 15 minutes, it takes a while to go deep
+
+
+
+You don't have to answer anything you don't want to!`
+],
+  ['Traffic Light Consent Game',
+  `Pick one player to give touch and one to receive touch.
+
+Giver, you're going to help your partner practice saying 'no' by touching them whereeeeever you want and they give you feedback.
+
+
+
+Receiver, you will practice stating your boundaries, by saying the following words:
+
+Red means: STOP! I don't like that
+
+Orange means: It's ok, but it's nearly a red.
+
+Green means: Mmmmmmmm, I like this, keep going
+
+
+
+Giver, when they say red, stop that touch and say 'Thank you'! Make them feel like their 'stop' is welcome and respected. Then start again with a different touch.
+
+
+
+*achtung!* The toucher should move slowly enough that the receiver can say red *before* their boundary is crossed. Especially if you're about to touch someone somewhere intimate, or do something uncomfortable, move in slow motion and make it obvious where your hand is going.
+
+
+
+Receiver, if they are being too easy on you, you can ask them 'make me say red' :-p
+
+
+
+Giver, you have permission to enjoy the touch! Do what you enjoy, you don't need to worry about making them happy, they'll tell you red if they don't like it. Start off slow and gentle, but if your partner is into it, feel free to go deep!
+
+
+
+Suggested play time: 5 minutes per person, then swap roles.`],
+['Hippy Eye Gazing',`Stand or sit in front of eachother and just hold eye contact for 5 minutes.
+
+
+
+Enjoy it! Remember to breathe, it's ok to blink, it's ok to feel awkward and giggle.`],
+['Authentic Requests Game',`Practice asking for what you reeeaally want, and build up to it in four rounds...
+
+
+
+Each round, the active person makes requests like 'May I xxxxx?' or 'Would you xxxxx?' until the time is up and the roles switch.
+
+(eg: 'can I hold your hand?', 'would you tell me a bed time story?')
+
+
+
+However, in each round the inactive person answers these requests with the following rules:
+
+
+
+* round 1 (1 min)
+
+Always answer 'Yes', but you don't do it, just keep asking questions! For now it's just the asker just practicing honesty
+
+* round 2 (1 min)
+
+Always answer 'No', even if you do want to do it (saying no is hard, this is practice time!)
+
+* round 3 (2 min)
+
+Answer with your honest yes or no.....but you still don't do it yet, now you're both practicing honesty.
+
+* round 4 (5 mins)
+
+Finally, answer with your honest yes or no - and if it's a yes, then do it!! But only for 30 seconds and make another request!
+
+
+
+During each round, switch roles (ie: both people do round 1, then both do round 2)
+
+
+
+What happens in the game stays in the game! Saying 'yes' in round 1 does not mean 'yes' in round 4, or even after the game, saying 'no' right now does not mean saying no forever.
+
+
+
+Be brave! What do you reaaaaaally want with this person right now.`],
+['“What do you desire?”',`One person will answer, and the other will ask the simple question 'What do you desire?'
+
+
+
+And then ask it again. And again. And again. Play for about 5 minutes and then swap roles.
+
+
+
+What do you want right now? What do you want from this person in front of you? What do you want from this encounter? What do you want in life?
+
+
+
+If you get stuck, tune into your body and wait for an honest answer to come.`],
+['The Noticing Game',`Take turns to tune into the moment and express what you notice right now.
+
+
+
+Start off by tuning into your body and saying what bodily sensations you notice, eg: 'When I sit here with you, I notice the grass under my feet'.
+
+
+
+If you notice an emotion coming up, express that, eg: 'When I hear you say that, I notice a feeling of sadness coming from my stomach'. Try and keep it rooted in body, really what is the physical sensation of that emotion?
+
+
+
+It's even ok to notice thoughts, eg: 'When I hear you say that, I notice a memory of disneyland came into my mind'
+
+
+
+But try not to get distracted by thinking too much, if you notice yourself analyzing, judging or logically responding to your partner, go back to tuning into your body.
+
+
+
+Trust the game! It feels silly at first, but eventually deep things come up...`],
+['The Listening Game',`Take turns to just...listen.
+
+One person will have time to express what's on their mind and be heard, then stop and swap roles.
+
+
+
+The listener's job is to just give the other person their attention, without interrupting, without judgement or affirmation, without giving their opinion, just listen.
+
+
+
+The speaker, you can talk about whatever you want! You can set a topic at the start, or really just let your heart flow with whatever comes up organically.
+
+You can talk about a life problem, a question you've been thinking about, your favourite pokemon, whatever feels interesting to you.
+
+
+
+If you run out of things to say, just wait, tune into your body and trust that something will come up.
+
+
+
+Try and set a timer, or just make an effort to set a clear start and end so it's clear that you're in a bubble space.
+
+5 minutes is good, 15 minutes is better, 60 minutes it goes real deep!`],
+['Gratitude Game',`Spend 5 minutes telling the other person everything you're grateful for, then swap.
+
+
+
+If you get stuck, just slow down, tune into your body and wait for something to come up.`],
+['Breathe Together',`You can add touch to help tune into your partners breath, but ask for consent first!
+
+
+
+Some suggestions:
+
+* place your left hand on the other persons heart and then your right hand over their hand on your heart
+
+* hug front to front so your chests are touching
+
+
+
+At least 3 minutes is good, but you can go longer if you wish.`],
+['Compassion and Shame Game',`One person shares a story, the other person just listens and witnesses. Then swap roles and the other person tells their story before moving on to the next round.
+
+
+
+round 1: Share a story of a beautiful experience you had
+
+round 2: Share a story of a shameful experience you had
+
+round 3: Share a story of something you're proud of
+
+round 4: Share a story of a time when you felt vulnerable
+
+
+
+While you listen, try and hold an energy of compassion and acceptance. You don't need to offer advice, or opinions, or feedback, just hold space for the story teller's honesty.`],
+['How are you a badass?',`Ask your partner to tell you all the things that they're proud of
+
+
+
+Set a timer for 5 minutes and don't let them be humble until it's over. If they get stuck or shy, reassure them that you want to know what an awesome person they are.
+
+
+
+When they're done, swap roles.`],
+['Blindfold Guided Tour',`Ask your partner if they would like to put on a blindfold, if they want you to gently take their hand and take them on an adventure through the space.
+
+
+
+Take them for a walk, find fun things for them to touch and listen to, play with all the senses, introduce them to new people... improvise!
+
+
+
+Don't forget to ask for consent and negotiate some safe words!
+
+
+
+Agree on a general length of time beforehand and then swap roles.
+
+
+
+If you can't find a blindfold, just close your eyes :-p`],
+['3-minute Wish Fulfillment Game :',`Ask your partner for aaaaaaaaanything you want them to do to you, and if they consent, they will do it for 3 minutes.
+
+
+
+You only get one minute to negotiate the asking, then move on to doing!
+
+
+
+After the 3 minutes are up, swap roles and play again. You can play several rounds, start slow and build up to crazier things once you've tuned into eachother a bit.
+
+
+
+Asker:
+
+First ask for the general thing you want, and if your partner agrees to that, ask for exactly how you want it and get agreement on which of those general thing you want, then agree on the details. Be ask specific as possible!
+
+
+
+You want a massage? Which muscles do want massaged? how strong? slow or fast strokes?
+
+You want to kiss? Where would you like to be kissed?
+
+
+
+(you should only ask them to do things to you, you should be in a relaxed receiving mode)
+
+
+
+Be brave! If you're honest and don't hold back, what do you reaaaally want from this person and this moment? Risk hearing a no and maybe you get your deepest wish fulfilled :-)
+
+
+
+Giver:
+
+If you don't feel comfortable doing something, practice saying 'I can't do that, is there something else I can do for you?'
+
+Only do what your partner asks for! Help them practice asking for what they want by not improvising, but instead ask them for clarification.`],
+['The Silent Dom',`Take a moment to breath together, connect and then ask your partner 'Will you give me power over you?'
+
+
+
+If they say yes, you now have complete power to give this person orders! Buuuuuuut, there's a few catches...
+
+
+
+* you're not allowed to speak
+
+* you can only give them instructions with hand gestures and mimes
+
+* you can't touch them (but you can instruct them to touch you)
+
+* they can say no to anything they don't feel comfortable with by shaking their head
+
+
+
+Spend 10 minutes enjoying making them fulfill your weird wishes, funny demands. Then swap roles and play again (Time for revenge!)
+
+
+
+Hint: The best way to start this game is with the dominant person sitting for at least the first few minutes and the servant starts standing in front of them
+
+
+
+Dominant:
+
+What do you want? You can trust the other person to say no if they don't like something, so enjoy
+
+If you get stuck and can't think of anything, just try some small things until you get back in the flow.
+
+
+
+Servant:
+
+Remember you can say no to anything and if you feel completely uncomfortable, you can stop the game completely by saying 'Red!'`]
+];
+let games = GAMES.map(([t,x]) => ([t,x]));
+
+  function triggerLove() {
+
+
+
+    var love = setInterval(function () {
+      var r_num = Math.floor(Math.random() * 40) + 1;
+      var r_size = Math.floor(Math.random() * 65) + 10;
+      var r_left = Math.floor(Math.random() * 100) + 1;
+      var r_bg = Math.floor(Math.random() * 25) + 100;
+      var r_time = Math.floor(Math.random() * 5) + 5;
+
+      $('.bg_heartf').append("<div class='heartf' style='width:" + r_size + "px;height:" + r_size + "px;left:" + r_left + "%;background:rgba(255," + (r_bg - 25) + "," + r_bg + ",1);-webkit-animation:love " + r_time + "s ease;-moz-animation:love " + r_time + "s ease;-ms-animation:love " + r_time + "s ease;animation:love " + r_time + "s ease'></div>");
+
+      $('.bg_heartf').append("<div class='heartf' style='width:" + (r_size - 10) + "px;height:" + (r_size - 10) + "px;left:" + (r_left + r_num) + "%;background:rgba(255," + (r_bg - 25) + "," + (r_bg + 25) + ",1);-webkit-animation:love " + (r_time + 5) + "s ease;-moz-animation:love " + (r_time + 5) + "s ease;-ms-animation:love " + (r_time + 5) + "s ease;animation:love " + (r_time + 5) + "s ease'></div>");
+
+      $('.heartf').each(function () {
+        var top = $(this).css("top").replace(/[^-\d\.]/g, '');
+        var width = $(this).css("width").replace(/[^-\d\.]/g, '');
+        if (top <= -100 || width >= 150) {
+          $(this).detach();
+        }
+      });
+    }, 200);
+
+    setTimeout(() => {
+      clearInterval(love);
+    }, 3000)
+  }
+
+  $('p#newgame a').click(function(e) {
+    transitionWithHearts();
+    e.preventDefault(); return false;
+  });
+
+  function transitionWithHearts() {
+    if (!$('body').hasClass('round'))
+      window.history && window.history.pushState && window.history.pushState('game', null);
+
+    if (games.length === 0)
+      games = GAMES.map(([t, x]) => ([t, x]));
+
+    triggerLove();
+    $('.white-overlay').addClass('active');
+    setTimeout(() => {
+      var index = Math.floor(Math.random() * games.length);
+      $('.screen-round h1').text(games[index][0]);
+      $('.screen-round h3').text(games[index][1]);
+      games.slice(index, 1);
+
+      $('body').addClass('round');
+      $('.white-overlay').removeClass('active');
+      $("html, body").scrollTop(0);
+      $('.heart').removeClass('pressed');
+    }, 9000);
+  }
+
+  function transitionBackHome() {
+    touched = [false, false];
+
+    $('.white-overlay').addClass('active');
+    setTimeout(() => {
+      $('body').removeClass('round');
+      $("html, body").scrollTop(0);
+      $('.white-overlay').removeClass('active');
+    }, 3000);
+  }
+
+  $(window).on('popstate', function (pop) {
+    if ($('body').hasClass('round')) {
+      transitionBackHome();
+    }
+    pop.preventDefault();
+    return false;
+  });
+
+  if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+  let to = -1;
+  let touched = [false, false];
+  $('.heart').on('touchstart mousedown', function (e) {
+    e.preventDefault(); // cancel mousedown
+    if (touched === undefined) return;
+    $(this).addClass('pressed');
+    touched[$(this).index()] = true;
+    if (touched[($(this).index()+1)%2]) {
+      to = setTimeout(function() {
+        transitionWithHearts();
+        touched = undefined;
+      }, 3000);
+    }
+  });
+  $('.heart').on('touchend', function () {
+    if (touched === undefined) return;
+    $(this).removeClass('pressed');
+    touched[$(this).index()] = false;
+    clearTimeout(to);
+  });
+</script>
+
+<script>
+  // Register service worker to control making site work offline
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/apresentfornils/sw.js')
+      .then(function () { console.log('Service Worker Registered'); });
+  }
+</script>
+
+<div id="log"></div>
+</body>
+</html>
